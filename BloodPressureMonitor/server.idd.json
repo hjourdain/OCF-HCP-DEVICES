@@ -1,0 +1,539 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Blood Pressure Monitor IDD",
+    "version": "v1.1.0-20181025"
+  },
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/BPM-AM?if=oic.if.ll": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/parameters/interfaceLinkList"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/links"
+            }
+          }
+        }
+      }
+    },
+    "/BPM-AM?if=oic.if.b": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/parameters/interfaceBatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/BatchGet"
+            }
+          }
+        }
+      }
+    },
+    "/BPM-AM?if=oic.if.baseline": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/parameters/interfaceBaseline"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/BloodPressureAM"
+            }
+          }
+        }
+      }
+    },
+    "/oic/p": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/parameters/interface50"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Platform"
+            }
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "interface50": {
+      "enum": [
+        "oic.if.baseline",
+        "oic.if.r"
+      ],
+      "in": "query",
+      "name": "if",
+      "type": "string"
+    },
+    "interfaceBaseline": {
+      "enum": [
+        "oic.if.baseline"
+      ],
+      "in": "query",
+      "name": "if",
+      "type": "string"
+    },
+    "interfaceBatch": {
+      "enum": [
+        "oic.if.b"
+      ],
+      "in": "query",
+      "name": "if",
+      "type": "string"
+    },
+    "interfaceLinkList": {
+      "enum": [
+        "oic.if.ll"
+      ],
+      "in": "query",
+      "name": "if",
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "BloodPressure": {
+      "properties": {
+        "rt": {
+          "description": "",
+          "items": {
+            "enum": [
+              "oic.r.blood.pressure"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "readOnly": true,
+          "default": [
+            "oic.r.blood.pressure"
+          ],
+          "type": "array"
+        },
+        "systolic": {
+          "description": "",
+          "minimum": 0,
+          "readOnly": true,
+          "type": "number"
+        },
+        "diastolic": {
+          "description": "",
+          "minimum": 0,
+          "readOnly": true,
+          "type": "number"
+        },
+        "units": {
+          "description": "",
+          "enum": [
+            "mmHg",
+            "kPa"
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "if": {
+          "description": "",
+          "items": {
+            "enum": [
+              "oic.if.baseline",
+              "oic.if.s"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "readOnly": true,
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "systolic",
+        "diastolic"
+      ]
+    },
+    "PulseRate": {
+      "properties": {
+        "pulserate": {
+          "description": "",
+          "minimum": 0,
+          "readOnly": true,
+          "type": "integer"
+        },
+        "rt": {
+          "description": "",
+          "items": {
+            "enum": [
+              "oic.r.pulserate"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "readOnly": true,
+          "default": [
+            "oic.r.pulserate"
+          ],
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "if": {
+          "description": "",
+          "items": {
+            "enum": [
+              "oic.if.baseline",
+              "oic.if.s"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "readOnly": true,
+          "type": "array"
+        }
+      },
+      "type": "object",
+      "required": [
+        "pulserate"
+      ]
+    },
+    "BloodPressureAM": {
+      "properties": {
+        "rt": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "oic.r.bloodpressuremonitor-am",
+              "oic.wk.atomicmeasurement"
+            ],
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "uniqueItems": true,
+          "readOnly": true,
+          "default": [
+            "oic.r.bloodpressuremonitor-am",
+            "oic.wk.atomicmeasurement"
+          ]
+        },
+        "rts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "oic.r.blood.pressure",
+              "oic.r.pulserate"
+            ]
+          },
+          "readOnly": true,
+          "default": [
+            "oic.r.blood.pressure"
+          ],
+          "description": ""
+        },
+        "rts-m": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "oic.r.blood.pressure"
+            ]
+          },
+          "readOnly": true,
+          "default": [
+            "oic.r.blood.pressure"
+          ],
+          "description": ""
+        },
+        "if": {
+          "description": "",
+          "items": {
+            "enum": [
+              "oic.if.b",
+              "oic.if.ll",
+              "oic.if.baseline"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "readOnly": true,
+          "type": "array"
+        },
+        "links": {
+          "$ref": "#/definitions/links"
+        }
+      },
+      "required": [
+        "rts-m"
+      ],
+      "type": "object"
+    },
+    "BloodPressureAMResp": {
+      "type": "object",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BloodPressure"
+        },
+        {
+          "$ref": "#/definitions/PulseRate"
+        }
+      ]
+    },
+    "BatchGet": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "$ref": "#/definitions/href"
+          },
+          "rep": {
+            "$ref": "#/definitions/BloodPressureAMResp"
+          }
+        },
+        "required": [
+          "href",
+          "rep"
+        ]
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/oic.oic-link"
+      }
+    },
+    "Platform": {
+      "properties": {
+        "if": {
+          "description": "",
+          "items": {
+            "enum": [
+              "oic.if.baseline",
+              "oic.if.r"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "readOnly": true,
+          "type": "array"
+        },
+        "mndt": {
+          "allOf": [
+            {
+              "description": "",
+              "pattern": "^([0-9]{4})-(1[0-2]|0[1-9])-(3[0-1]|2[0-9]|1[0-9]|0[1-9])$",
+              "type": "string"
+            },
+            {
+              "description": "",
+              "readOnly": true
+            }
+          ]
+        },
+        "mnfv": {
+          "description": "",
+          "maxLength": 64,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnhw": {
+          "description": "",
+          "maxLength": 64,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnml": {
+          "description": "",
+          "format": "uri",
+          "maxLength": 256,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnmn": {
+          "description": "",
+          "maxLength": 64,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnmo": {
+          "description": "",
+          "maxLength": 64,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnos": {
+          "description": "",
+          "maxLength": 64,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnpv": {
+          "description": "",
+          "maxLength": 64,
+          "readOnly": true,
+          "type": "string"
+        },
+        "mnsl": {
+          "description": "",
+          "format": "uri",
+          "maxLength": 256,
+          "readOnly": true,
+          "type": "string"
+        },
+        "pi": {
+          "allOf": [
+            {
+              "description": "",
+              "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
+              "type": "string"
+            },
+            {
+              "description": "",
+              "readOnly": true
+            }
+          ]
+        },
+        "rt": {
+          "default": [
+            "oic.wk.p"
+          ],
+          "description": "",
+          "items": {
+            "maxLength": 64,
+            "type": "string"
+          },
+          "minItems": 1,
+          "readOnly": true,
+          "type": "array"
+        },
+        "st": {
+          "description": "",
+          "format": "date-time",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "pi",
+        "mnmn"
+      ],
+      "type": "object"
+    },
+    "oic.oic-link": {
+      "type": "object",
+      "properties": {
+        "href": {
+          "$ref": "#/definitions/href"
+        },
+        "rt": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "oic.r.blood.pressure",
+              "oic.r.pulserate"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "readOnly": true,
+          "uniqueItems": true,
+          "default": [
+            "oic.r.blood.pressure",
+            "oic.r.pulserate"
+          ],
+          "description": ""
+        },
+        "if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "oic.if.baseline",
+              "oic.if.s"
+            ]
+          },
+          "minItems": 1,
+          "description": ""
+        },
+        "p": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "bm": {
+              "description": "",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "bm"
+          ]
+        }
+      },
+      "required": [
+        "href",
+        "rt",
+        "if"
+      ]
+    },
+    "id": {
+      "description": "",
+      "maxLength": 64,
+      "readOnly": true,
+      "type": "string"
+    },
+    "href": {
+      "type": "string",
+      "maxLength": 256,
+      "format": "uri",
+      "description": ""
+    }
+  }
+}
+

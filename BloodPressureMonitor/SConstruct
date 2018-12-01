@@ -1,0 +1,37 @@
+import os
+SConscript('../Iotivity/build_common/SConscript')
+Import('env')
+server_env = env.Clone()
+
+server_env.AppendUnique(CPPPATH=[
+    '../Iotivity/resource/csdk/logger/include',
+    '../Iotivity/resource/csdk/include',
+    '../Iotivity/resource/csdk/stack/include',
+    '../Iotivity/resource/csdk/security/include',
+    '../Iotivity/resource/oc_logger/include',
+    '../Iotivity/resource/csdk/include',
+    '../Iotivity/resource/c_common',
+    '../Iotivity/resource/c_common/oic_malloc/include',
+    '../Iotivity/resource/c_common/oic_string/include',
+    '../Iotivity/out/linux/x86_64/release/deploy/include/c_common',
+    '../Iotivity/out/linux/x86_64/release/deploy/include/c_common/experimental'
+])
+
+server_env.AppendUnique(LIBPATH=[
+    '../Iotivity/out/linux/x86_64/release'
+])
+
+server_env.AppendUnique(CXXFLAGS=['-std=c++0x', '-Wall', '-pthread'])
+server_env.AppendUnique(LIBS=['pthread'])
+server_env.Append(LINKFLAGS=['-Wl,--no-as-needed'])
+server_env.PrependUnique(LIBS=['c_common'])
+server_env.PrependUnique(LIBS=['logger'])
+server_env.PrependUnique(LIBS=['octbstack'])
+server_env.AppendUnique(LIBS=['mbedtls', 'mbedx509', 'mbedcrypto'])
+server_env.AppendUnique(CPPDEFINES=['TB_LOG'])
+
+# Build Blood Pressure Monitor
+server = server_env.Program(
+    'server', [
+        'server.cpp'
+        ])
