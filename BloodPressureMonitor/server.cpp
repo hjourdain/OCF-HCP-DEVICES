@@ -75,7 +75,7 @@ static volatile int prPulserateValue = 60;
 static OCResourceHandle bp;
 static OCResourceHandle pr;
 static OCResourceHandle bpm_am;
-static void (*pnewAmReadyNotificationHandler) (OCResourceHandle resourceHandle) = NULL;
+static void (*pNewAmReadyNotificationHandler) (OCResourceHandle resourceHandle) = NULL;
 static void (*pAMSendPayloadHandler) (OCResourceHandle amResourceHandle, OCEntityHandlerRequest *ehRequest, OCRepPayload *pResourcePayload);
 
 static FILE* server_fopen(const char *path, const char *mode)
@@ -366,14 +366,14 @@ int main()
                     gHardwareVersion, gFirmwareVersion, gSupportLink, gSystemTime);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG(INFO, TAG, "Platform info setting failed locally!");
+        OIC_LOG(ERROR, TAG, "Platform info setting failed locally!");
         exit (EXIT_FAILURE);
     }
 
     result = OCSetPlatformInfo(platformInfo);    
     if (result != OC_STACK_OK)
     {
-        OIC_LOG(INFO, TAG, "Platform Registration failed!");
+        OIC_LOG(ERROR, TAG, "Platform Registration failed!");
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Platform information initialized successfully.");
@@ -382,7 +382,7 @@ int main()
     result = SetDeviceInfo();
     if (result != OC_STACK_OK)
     {
-        OIC_LOG(INFO, TAG, "Device Registration failed!");
+        OIC_LOG(ERROR, TAG, "Device Registration failed!");
         exit (EXIT_FAILURE);
     }
 
@@ -397,7 +397,7 @@ int main()
         );
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Blood Pressure resource creation failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Blood Pressure resource creation failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Blood Pressure resource created successfully.");
@@ -405,7 +405,7 @@ int main()
     result = OCBindResourceInterfaceToResource(bp, OC_RSRVD_INTERFACE_SENSOR);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Binding SENSOR interface to Blood Pressure resource failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Binding SENSOR interface to Blood Pressure resource failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "SENSOR interface successfully bound to Blood Pressure resource.");
@@ -422,7 +422,7 @@ int main()
         );
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Pulse Rate resource creation failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Pulse Rate resource creation failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Pulse Rate resource created successfully.");
@@ -430,7 +430,7 @@ int main()
     result = OCBindResourceInterfaceToResource(pr, OC_RSRVD_INTERFACE_SENSOR);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Binding SENSOR interface to Pulse Rate resource failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Binding SENSOR interface to Pulse Rate resource failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "SENSOR interface successfully bound to Pulse Rate resource.");
@@ -447,7 +447,7 @@ int main()
         );
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Atomic measurement resource creation failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Atomic measurement resource creation failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Atomic measurement resource created successfully.");
@@ -455,7 +455,7 @@ int main()
     result = OCBindResourceInterfaceToResource(bpm_am, OC_RSRVD_INTERFACE_LL);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Binding LL interface to atomic measurement resource failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Binding LL interface to atomic measurement resource failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "LL interface successfully bound to atomic measurement resource.");
@@ -463,7 +463,7 @@ int main()
     result = OCBindResourceInterfaceToResource(bpm_am, OC_RSRVD_INTERFACE_DEFAULT);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Binding BASELINE interface to atomic measurement resource failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Binding BASELINE interface to atomic measurement resource failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "BASELINE interface successfully bound to atomic measurement resource.");
@@ -471,26 +471,26 @@ int main()
     result = OCBindResourceTypeToResource(bpm_am, "oic.r.bloodpressuremonitor-am");
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Setting resource type of atomic measurement failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Setting resource type of atomic measurement failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Successfully set resource type of atomic measurement.");
     }
 
     // Add the individual resources to the atomic measurement
-    result = OCBindResourceAM(bpm_am, bp, true, &pnewAmReadyNotificationHandler, &pAMSendPayloadHandler);
+    result = OCBindResourceAM(bpm_am, bp, true);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Adding Blood Pressure resource to the atomic measurement failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Adding Blood Pressure resource to the atomic measurement failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Successfully added Blood Pressure resource to the atomic measurement.");
     }
 
-    result = OCBindResourceAM(bpm_am, pr, true, NULL, NULL);
+    result = OCBindResourceAM(bpm_am, pr, true);
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Adding Pulse Rate resource to the atomic measurement failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Adding Pulse Rate resource to the atomic measurement failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Successfully added Pulse Rate resource to the atomic measurement.");
@@ -500,10 +500,19 @@ int main()
     result = OCBindRtsMToResource(bpm_am, "oic.r.blood.pressure");
     if (result != OC_STACK_OK)
     {
-        OIC_LOG_V(INFO, TAG, "Adding rts-m to the atomic measurement failed (error = %s)!", getResult(result));
+        OIC_LOG_V(ERROR, TAG, "Adding rts-m to the atomic measurement failed (error = %s)!", getResult(result));
         exit (EXIT_FAILURE);
     } else {
         OIC_LOG(INFO, TAG, "Successfully added rts-m to the atomic measurement.");
+    }
+
+    // Get the new AM notification and the AM send payload handlers
+    pNewAmReadyNotificationHandler = OCGetNewAMAvailableHandler(bpm_am);
+    pAMSendPayloadHandler = OCGetAMSendPayloadHandler(bpm_am);
+    if (!pNewAmReadyNotificationHandler || !pAMSendPayloadHandler)
+    {
+        OIC_LOG(ERROR, TAG, "Getting the AM handlers failed!");
+        exit(EXIT_FAILURE);
     }
 
     int status;
@@ -530,30 +539,39 @@ int main()
         {
             if (strcmp("systolic", command) == 0)
             {
-                printf("Enter new systolic value: ");
+                printf("Enter new systolic value [current value = %d]: ", bpSystolicValue);
                 res = scanf("%d", &value);
                 printf("\n");
                 printf("Changing systolic value of Blood Pressure from %d to %d...\n", bpSystolicValue, value);
-                bpSystolicValue = value;
-                pnewAmReadyNotificationHandler(bpm_am);
+                if (value != bpSystolicValue)
+                {
+                    bpSystolicValue = value;
+                    pNewAmReadyNotificationHandler(bpm_am);
+                }
             }
             else if (strcmp("diastolic", command) == 0)
             {
-                printf("Enter new diastolic value: ");
+                printf("Enter new diastolic value [current value = %d]: ", bpDiastolicValue);
                 res = scanf("%d", &value);
                 printf("\n");
                 printf("Changing diastolic value of Blood Pressure from %d to %d...\n", bpDiastolicValue, value);
-                bpDiastolicValue = value;
-                pnewAmReadyNotificationHandler(bpm_am);
+                if (value != bpDiastolicValue)
+                {
+                    bpDiastolicValue = value;
+                    pNewAmReadyNotificationHandler(bpm_am);
+                }
             }
             else if (strcmp("pulserate", command) == 0)
             {
-                printf("Enter new pulse rate value: ");
+                printf("Enter new pulse rate value [current value = %d]: ", prPulserateValue);
                 res = scanf("%d", &value);
                 printf("\n");
                 printf("Changing pulse rate value of Pulse Rate from %d to %d...\n", prPulserateValue, value);
-                prPulserateValue = value;
-                pnewAmReadyNotificationHandler(bpm_am);
+                if (value != prPulserateValue)
+                {
+                    prPulserateValue = value;
+                    pNewAmReadyNotificationHandler(bpm_am);
+                }
             }
             else if (strcmp("h", command) == 0)
             {
