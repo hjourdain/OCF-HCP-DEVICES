@@ -76,7 +76,6 @@ static OCResourceHandle bp;
 static OCResourceHandle pr;
 static OCResourceHandle bpm_am;
 static void (*pNewAmReadyNotificationHandler) (OCResourceHandle resourceHandle) = NULL;
-static void (*pAMSendPayloadHandler) (OCResourceHandle amResourceHandle, OCEntityHandlerRequest *ehRequest, OCRepPayload *pResourcePayload);
 
 static FILE* server_fopen(const char *path, const char *mode)
 {
@@ -274,6 +273,8 @@ exit:
 
 static OCEntityHandlerResult BloodPressureEhCb (OCEntityHandlerFlag flag, OCEntityHandlerRequest *ehRequest, void *ehCallbackParam)
 {
+    OCEntityHandlerResponse response;
+    OCRepPayload *payload = OCRepPayloadCreate();
     OCEntityHandlerResult ret = OC_EH_OK;
 
     // Unused parameter flag
@@ -283,7 +284,6 @@ static OCEntityHandlerResult BloodPressureEhCb (OCEntityHandlerFlag flag, OCEnti
 
     OIC_LOG_V(INFO, TAG, "Callback for Blood Pressure resource");
 
-    OCRepPayload* payload = OCRepPayloadCreate();
     if (OC_REST_GET == ehRequest->method)
     {
         OIC_LOG_V(INFO, TAG, "Callback for Blood Pressure resource called with GET method");
@@ -292,7 +292,23 @@ static OCEntityHandlerResult BloodPressureEhCb (OCEntityHandlerFlag flag, OCEnti
         OCRepPayloadSetPropInt(payload, "diastolic", bpDiastolicValue);
         OCRepPayloadSetPropString(payload, "units", "mmHg");
 
-        pAMSendPayloadHandler(bp, ehRequest, payload);
+        // Prepare the response
+        response.requestHandle = ehRequest->requestHandle;
+        response.ehResult = OC_EH_OK;
+        response.payload = (OCPayload *)pResourcePayload;
+        response.numSendVendorSpecificHeaderOptions = 0;
+        memset(response.sendVendorSpecificHeaderOptions, 0, sizeof response.sendVendorSpecificHeaderOptions);
+        // Indicate that response is NOT in a persistent buffer
+        response.persistentBufferFlag = 0;
+        // For AM, make sure the uri is copied into the response
+        strncpy(response.resourceUri, bp_uri, sizeof(response.resourceUri));
+
+        // Send the response
+        if (OCDoResponse(&response) != OC_STACK_OK)
+        {
+            OIC_LOG(ERROR, TAG, "Callback for Blood Pressure resource: error sending response!");
+            ret = OC_EH_ERROR;
+        }
     }
     else
     // Normally impossible, as AM sends only the GET requests!
@@ -309,6 +325,8 @@ static OCEntityHandlerResult BloodPressureEhCb (OCEntityHandlerFlag flag, OCEnti
 
 static OCEntityHandlerResult PulseRateEhCb (OCEntityHandlerFlag flag, OCEntityHandlerRequest *ehRequest, void *ehCallbackParam)
 {
+    OCEntityHandlerResponse response;
+    OCRepPayload *payload = OCRepPayloadCreate();
     OCEntityHandlerResult ret = OC_EH_OK;
 
     // Unused parameter flag
@@ -326,7 +344,23 @@ static OCEntityHandlerResult PulseRateEhCb (OCEntityHandlerFlag flag, OCEntityHa
         OCRepPayloadSetPropString(payload, "id", "user_example_id");
         OCRepPayloadSetPropInt(payload, "pulserate", prPulserateValue);
 
-        pAMSendPayloadHandler(pr, ehRequest, payload);
+        // Prepare the response
+        response.requestHandle = ehRequest->requestHandle;
+        response.ehResult = OC_EH_OK;
+        response.payload = (OCPayload *)pResourcePayload;
+        response.numSendVendorSpecificHeaderOptions = 0;
+        memset(response.sendVendorSpecificHeaderOptions, 0, sizeof response.sendVendorSpecificHeaderOptions);
+        // Indicate that response is NOT in a persistent buffer
+        response.persistentBufferFlag = 0;
+        // For AM, make sure the uri is copied into the response
+        strncpy(response.resourceUri, pr_uri, sizeof(response.resourceUri));
+
+        // Send the response
+        if (OCDoResponse(&response) != OC_STACK_OK)
+        {
+            OIC_LOG(ERROR, TAG, "Callback for Pulse Rate resource: error sending response!");
+            ret = OC_EH_ERROR;
+        }
     }
     else
     {
@@ -508,10 +542,9 @@ int main()
 
     // Get the new AM notification and the AM send payload handlers
     pNewAmReadyNotificationHandler = OCGetNewAMAvailableHandler(bpm_am);
-    pAMSendPayloadHandler = OCGetAMSendPayloadHandler(bpm_am);
-    if (!pNewAmReadyNotificationHandler || !pAMSendPayloadHandler)
+    if (!pNewAmReadyNotificationHandler)
     {
-        OIC_LOG(ERROR, TAG, "Getting the AM handlers failed!");
+        OIC_LOG(ERROR, TAG, "Getting the AM handler failed!");
         exit(EXIT_FAILURE);
     }
 
