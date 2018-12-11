@@ -1,24 +1,24 @@
 import os
-SConscript('../Iotivity/build_common/SConscript')
+SConscript('../iotivity/build_common/SConscript')
 Import('env')
 server_env = env.Clone()
 
 server_env.AppendUnique(CPPPATH=[
-    '../Iotivity/resource/csdk/logger/include',
-    '../Iotivity/resource/csdk/include',
-    '../Iotivity/resource/csdk/stack/include',
-    '../Iotivity/resource/csdk/security/include',
-    '../Iotivity/resource/oc_logger/include',
-    '../Iotivity/resource/csdk/include',
-    '../Iotivity/resource/c_common',
-    '../Iotivity/resource/c_common/oic_malloc/include',
-    '../Iotivity/resource/c_common/oic_string/include',
-    '../Iotivity/out/linux/x86_64/release/deploy/include/c_common',
-    '../Iotivity/out/linux/x86_64/release/deploy/include/c_common/experimental'
+    '../iotivity/resource/csdk/logger/include',
+    '../iotivity/resource/csdk/include',
+    '../iotivity/resource/csdk/stack/include',
+    '../iotivity/resource/csdk/security/include',
+    '../iotivity/resource/oc_logger/include',
+    '../iotivity/resource/csdk/include',
+    '../iotivity/resource/c_common',
+    '../iotivity/resource/c_common/oic_malloc/include',
+    '../iotivity/resource/c_common/oic_string/include',
+    '../iotivity/out/linux/x86_64/release/deploy/include/c_common',
+    '../iotivity/out/linux/x86_64/release/deploy/include/c_common/experimental'
 ])
 
 server_env.AppendUnique(LIBPATH=[
-    '../Iotivity/out/linux/x86_64/release'
+    '../iotivity/out/linux/x86_64/release'
 ])
 
 server_env.AppendUnique(CXXFLAGS=['-std=c++0x', '-Wall', '-pthread'])
