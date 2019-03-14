@@ -75,7 +75,6 @@ static volatile int prPulserateValue = 60;
 static OCResourceHandle bp;
 static OCResourceHandle pr;
 static OCResourceHandle bpm_am;
-static void (*pNewAmReadyNotificationHandler) (OCResourceHandle resourceHandle) = NULL;
 
 static FILE* server_fopen(const char *path, const char *mode)
 {
@@ -295,7 +294,7 @@ static OCEntityHandlerResult BloodPressureEhCb (OCEntityHandlerFlag flag, OCEnti
         // Prepare the response
         response.requestHandle = ehRequest->requestHandle;
         response.ehResult = OC_EH_OK;
-        response.payload = (OCPayload *)pResourcePayload;
+        response.payload = (OCPayload *)payload;
         response.numSendVendorSpecificHeaderOptions = 0;
         memset(response.sendVendorSpecificHeaderOptions, 0, sizeof response.sendVendorSpecificHeaderOptions);
         // Indicate that response is NOT in a persistent buffer
@@ -336,8 +335,6 @@ static OCEntityHandlerResult PulseRateEhCb (OCEntityHandlerFlag flag, OCEntityHa
 
     OIC_LOG_V(INFO, TAG, "Callback for Pulse Rate resource");
 
-    OCRepPayload* payload = OCRepPayloadCreate();
-
     if (OC_REST_GET == ehRequest->method)
     {
         OIC_LOG_V(INFO, TAG, "Callback for Pulse Rate resource called with GET method");
@@ -347,7 +344,7 @@ static OCEntityHandlerResult PulseRateEhCb (OCEntityHandlerFlag flag, OCEntityHa
         // Prepare the response
         response.requestHandle = ehRequest->requestHandle;
         response.ehResult = OC_EH_OK;
-        response.payload = (OCPayload *)pResourcePayload;
+        response.payload = (OCPayload *)payload;
         response.numSendVendorSpecificHeaderOptions = 0;
         memset(response.sendVendorSpecificHeaderOptions, 0, sizeof response.sendVendorSpecificHeaderOptions);
         // Indicate that response is NOT in a persistent buffer
@@ -540,14 +537,6 @@ int main()
         OIC_LOG(INFO, TAG, "Successfully added rts-m to the atomic measurement.");
     }
 
-    // Get the new AM notification and the AM send payload handlers
-    pNewAmReadyNotificationHandler = OCGetNewAMAvailableHandler(bpm_am);
-    if (!pNewAmReadyNotificationHandler)
-    {
-        OIC_LOG(ERROR, TAG, "Getting the AM handler failed!");
-        exit(EXIT_FAILURE);
-    }
-
     int status;
     pthread_t threads[3];
     int thread_id;
@@ -579,7 +568,7 @@ int main()
                 if (value != bpSystolicValue)
                 {
                     bpSystolicValue = value;
-                    pNewAmReadyNotificationHandler(bpm_am);
+                    OCNotifyNewAMAvailable(bpm_am);
                 }
             }
             else if (strcmp("diastolic", command) == 0)
@@ -591,7 +580,7 @@ int main()
                 if (value != bpDiastolicValue)
                 {
                     bpDiastolicValue = value;
-                    pNewAmReadyNotificationHandler(bpm_am);
+                    OCNotifyNewAMAvailable(bpm_am);
                 }
             }
             else if (strcmp("pulserate", command) == 0)
@@ -603,7 +592,7 @@ int main()
                 if (value != prPulserateValue)
                 {
                     prPulserateValue = value;
-                    pNewAmReadyNotificationHandler(bpm_am);
+                    OCNotifyNewAMAvailable(bpm_am);
                 }
             }
             else if (strcmp("h", command) == 0)
