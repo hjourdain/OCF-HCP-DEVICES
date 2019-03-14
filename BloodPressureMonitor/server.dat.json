@@ -1,4 +1,11 @@
 {
+    "sp": {
+        "supportedprofiles": [ "1.3.6.1.4.1.51414.0.0.1.0" ],
+        "currentprofile": "1.3.6.1.4.1.51414.0.0.1.0",
+        "rowneruuid": "00000000-0000-0000-0000-000000000000",
+        "rt": ["oic.r.ps"],
+        "if": ["oic.if.baseline"]
+    },
     "acl": {
         "aclist2": [
             {
@@ -57,7 +64,7 @@
     "doxm": {
         "oxms": [0],
         "oxmsel": 0,
-        "sct": 9,
+        "sct": 1,
         "owned": false,
         "deviceuuid": "12345678-1234-1234-1234-123456789012",
         "devowneruuid": "00000000-0000-0000-0000-000000000000",
